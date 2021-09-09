@@ -50,10 +50,10 @@ int main()
     {
         // Read next chunk
         // Chunk chunk = 0;
-        // file.read(reinterpret_cast<char*>(chunk), sizeof(Chunk));
+        // file.read(reinterpret_cast<char*>(chunk), 2);
 
-        unsigned char buffer[2];
-        file.read(reinterpret_cast<char *>(buffer), 2);
+        char buffer[2];
+        file.read(buffer, 2);
 
         Chunk chunk = (static_cast<Byte>(buffer[0]) << 8) +
                       (static_cast<Byte>(buffer[1]) << 0);
