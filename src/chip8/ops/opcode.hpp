@@ -2,6 +2,7 @@
 #define __OPCODE_HPP__
 
 #include <cstdint>
+#include <ostream>
 
 namespace chippy
 {
@@ -32,6 +33,20 @@ struct opcode
 
     constexpr inline std::uint16_t get() const
     { return _opcode; }
+
+    friend std::ostream& operator<<(std::ostream& os, const opcode& op)
+    { 
+        os << "0x";
+        os << std::hex;
+        // separate into nibbles to get leading zeroes
+        os << op.extract(3); 
+        os << op.extract(2);
+        os << op.extract(1);
+        os << op.extract(0);
+        os << ""; // necessary for some reason
+        os << std::dec; 
+        return os;
+    }
 
     /****************
      * PARSE OPCODE *
