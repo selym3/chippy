@@ -1,23 +1,23 @@
 #include <iostream>
-#include <fstream>
-
-#include <array>
-#include <algorithm>
-#include <string>
-
 
 #include "./hardware/cpu.hpp"
 
 int main()
 {
     chippy::cpu cpu;
+
     if (!cpu.load_rom("./roms/tetris.rom"))
     {
         std::cout << "Couldn't load rom :( \n";
         return 1;
     }
 
-    for (int i = 0; i < 5; ++i) 
+    // NOTE: the instructions are big-endian, so 0xe000 -> 0x00e0
+    // cpu.load_rom(std::vector<std::uint16_t>({ 
+    //     0xee00, 0xe000, 0x55f2
+    // }));
+
+    for (int i = 0; i < 3; ++i) 
     {
         auto opcode = cpu.get_opcode();
 

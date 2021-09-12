@@ -85,8 +85,8 @@ namespace chippy
             {
                 auto opcode = rombytes[i];
 
-                mem[(i * 2) + 0x200] = (opcode & 0xFF00) >> 8;
-                mem[(i * 2) + 0x201] = (opcode & 0x00FF) >> 0;
+                mem[(i * 2) + 0x201] = (opcode & 0xFF00) >> 8;
+                mem[(i * 2) + 0x200] = (opcode & 0x00FF) >> 0;
             }
 
             return true;
