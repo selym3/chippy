@@ -4,10 +4,11 @@
 #include "./opcode.hpp"
 #include <functional>
 #include <array>
-namespace chippy { class cpu; }
 
 namespace chippy
 {
+    class cpu;
+    
     using OpHandler = std::function<void(cpu&, opcode)>;
     using Dispatcher = std::array<OpHandler, 16>;
 }
