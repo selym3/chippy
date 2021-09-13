@@ -4,8 +4,8 @@
 #include <array>
 #include <iostream>
 
+#include "./ops/opcode.hpp"
 #include "./hardware/memory.hpp"
-#include "./ops/optypes.hpp"
 
 namespace chippy
 {
@@ -39,30 +39,9 @@ namespace chippy
         std::uint8_t delay; // delay timer (60 hz)
         std::uint8_t sound; // sound timer (60 hz)
 
-        // OPCODES
-        Dispatcher dispatcher;
-
-        // get opcode at pc
-        opcode get_opcode() const
-        {
-            char upper = memory[kFreeStart + (pc + 0)];
-            char lower = memory[kFreeStart + (pc + 1)];
-
-            std::uint16_t data =
-                (static_cast<unsigned char>(upper) << 8) +
-                (static_cast<unsigned char>(lower) << 0);
-
-            return opcode{data};
-        }
-
-        void cycle()
-        {
-            auto opcode = get_opcode();
-            auto id = opcode.extract(3);
-            
-            std::cout << opcode << " " << id << " \n";
-            dispatcher.at(id)(*this, opcode);
-        }
+        opcode get_opcode() const;
+        void cycle();
+        void handle_opcode(cpu &cpu, opcode op);
     };
 }
 

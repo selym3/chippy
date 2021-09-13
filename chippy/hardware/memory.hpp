@@ -47,7 +47,7 @@ struct memory
     {
         return buffer[index];
     }
-
+    
     char& operator[](std::size_t index)
     {
         return buffer[index];
