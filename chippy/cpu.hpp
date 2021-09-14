@@ -5,7 +5,10 @@
 #include <iostream>
 
 #include "./ops/opcode.hpp"
+
 #include "./hardware/memory.hpp"
+#include "./hardware/stack.hpp"
+#include "./hardware/gpu.hpp"
 
 namespace chippy
 {
@@ -15,9 +18,9 @@ namespace chippy
 
     // 16 16-bit value stack
     constexpr std::size_t kStackSize = 16;
-    using stack_t = std::array<std::uint16_t, kStackSize>;
+    using stack_t = stack<kStackSize>;
 
-    // 4k memory
+    // 4096 byte memory
     constexpr std::size_t kBufferBytes = 0x1000;
     using memory_t = memory<kBufferBytes>;
 
@@ -32,8 +35,10 @@ namespace chippy
         std::uint8_t pc;       // program counter
 
         // STACK
-        std::uint8_t sp; // stack pointer
-        stack_t stack;   // stack
+        stack_t stack; // stack
+
+        // DISPLAY
+        gpu display;
 
         // TIMERS
         std::uint8_t delay; // delay timer (60 hz)
@@ -41,7 +46,7 @@ namespace chippy
 
         opcode get_opcode() const;
         void cycle();
-        void handle_opcode(cpu &cpu, opcode op);
+        void handle(opcode op);
     };
 }
 

@@ -12,29 +12,13 @@ int main()
     //     return 1;
     // }
 
-
-    cpu.memory.load_rom(std::vector<std::uint16_t>({ 
-        0xee00, 0xe000, 0x55f2
+    cpu.memory.load_rom(std::vector<std::uint16_t>({
+        0x0af0
     }));
 
-    // for (;;)
-    // {
-    //     cpu.cycle();
-    // }
-
-    for (int i = 0; i < 3; ++i) 
+    for (;;)
     {
-        chippy::opcode opcode = cpu.get_opcode();
-
-        std::cout << "READ: ";
-        std::cout << std::hex;
-
-        std::cout << opcode.get();
-
-        std::cout << std::dec;
-        std::cout << "\n";
-
-        cpu.pc += 2;
+        cpu.cycle();
     }
 
     return 0;

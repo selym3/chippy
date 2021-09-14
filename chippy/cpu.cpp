@@ -1,4 +1,5 @@
 #include "./cpu.hpp"
+#include <cstdlib> // random
 
 using namespace chippy;
 
@@ -16,16 +17,16 @@ opcode cpu::get_opcode() const
 
 void cpu::cycle()
 {
-    auto opcode = get_opcode();
-    auto id = opcode.extract(3);
+    opcode opcode = get_opcode();
+    auto id = opcode.id();
 
-    std::cout << opcode << " " << id << " \n";
+    std::cout << opcode << " (" << id << ") \n";
 
-    handle_opcode(*this, opcode);
-    this->pc += 2;
+    handle(opcode);
+    display.draw();
 }
 
-void cpu::handle_opcode(cpu &cpu, opcode op)
+void cpu::handle(opcode op)
 {
     switch (op.id())
     {
@@ -36,11 +37,14 @@ void cpu::handle_opcode(cpu &cpu, opcode op)
         {
         case 0x00E0:
         {
+            std::cout << "screen clearn\n";
+            pc += 2;
             break;
         }
 
         case 0x00EE:
         {
+            pc = stack.pop();
             break;
         }
 
@@ -56,49 +60,55 @@ void cpu::handle_opcode(cpu &cpu, opcode op)
 
     case 0x1:
     {
-        std::cout << op << "\n";
+        pc = op.addr();
         break;
     }
 
     case 0x2:
     {
-        std::cout << op << "\n";
+        stack.push(pc);
+        pc = op.addr();
         break;
     }
 
     case 0x3:
     {
-        if (cpu.v[op.x()] == op.byte())
-            cpu.pc += 2;
+        if (v[op.x()] == op.byte())
+            pc += 2;
 
+        pc += 2;
         break;
     }
 
     case 0x4:
     {
-        if (cpu.v[op.x()] != op.byte())
-            cpu.pc += 2;
+        if (v[op.x()] != op.byte())
+            pc += 2;
 
+        pc += 2;
         break;
     }
 
     case 0x5:
     {
-        if (cpu.v[op.x()] == cpu.v[op.y()])
-            cpu.pc += 2;
+        if (v[op.x()] == v[op.y()])
+            pc += 2;
 
+        pc += 2;
         break;
     }
 
     case 0x6:
     {
-        cpu.v[op.x()] = op.byte();
+        v[op.x()] = op.byte();
+        pc += 2;
         break;
     }
 
     case 0x7:
     {
-        cpu.v[op.x()] += op.byte();
+        v[op.x()] += op.byte();
+        pc += 2;
         break;
     }
 
@@ -114,62 +124,62 @@ void cpu::handle_opcode(cpu &cpu, opcode op)
         {
         case 0x0:
         {
-            cpu.v[x] = cpu.v[y];
+            v[x] = v[y];
             break;
         }
 
         case 0x1:
         {
-            cpu.v[x] |= cpu.v[y];
+            v[x] |= v[y];
             break;
         }
 
         case 0x2:
         {
-            cpu.v[x] &= cpu.v[y];
+            v[x] &= v[y];
             break;
         }
 
         case 0x3:
         {
-            cpu.v[x] ^= cpu.v[y];
+            v[x] ^= v[y];
             break;
         }
 
         case 0x4:
         {
-            std::uint16_t add = cpu.v[x] + cpu.v[y];
-            cpu.v[0xF] = add > 255;
-            cpu.v[x] = static_cast<std::uint8_t>(add & 0x00FF);
+            std::uint16_t add = v[x] + v[y];
+            v[0xF] = add > 255;
+            v[x] = static_cast<std::uint8_t>(add & 0x00FF);
             break;
         }
 
         case 0x5:
         {
-            cpu.v[0xF] = cpu.v[x] > cpu.v[y];
-            cpu.v[x] -= cpu.v[y];
+            v[0xF] = v[x] > v[y];
+            v[x] -= v[y];
             break;
         }
 
         case 0x6:
         {
-            cpu.v[0xF] = cpu.v[x] & 1;
-            cpu.v[x] >>= 1;
+            v[0xF] = v[x] & 1;
+            v[x] >>= 1;
             break;
         }
 
         case 0x7:
         {
-            cpu.v[0xF] = cpu.v[y] > cpu.v[x];
-            cpu.v[x] = cpu.v[y] - cpu.v[x];
+            v[0xF] = v[y] > v[x];
+            v[x] = v[y] - v[x];
             break;
         }
 
         case 0xE:
         {
             auto msb = 0b10000000;
-            cpu.v[0xF] = ((cpu.v[x] & msb) >> 7);
-            cpu.v[x] <<= 1;
+            v[0xF] = ((v[x] & msb) >> 7);
+            v[x] <<= 1;
             break;
         }
 
@@ -180,48 +190,63 @@ void cpu::handle_opcode(cpu &cpu, opcode op)
         }
         }
 
+        pc += 2;
         break;
     }
 
     case 0x9:
     {
-        std::cout << op << "\n";
+        if (v[op.x()] != v[op.y()])
+            pc += 2;
+
+        pc += 2;
         break;
     }
 
     case 0xA:
     {
-        std::cout << op << "\n";
+        address = op.addr();
+        pc += 2;
         break;
     }
 
     case 0xB:
     {
-        std::cout << op << "\n";
+        pc = v[0x0] + op.addr();
         break;
     }
 
     case 0xC:
     {
-        std::cout << op << "\n";
+        auto random = std::rand() % 256;
+        v[op.x()] = random & op.byte();
+        pc += 2;
         break;
     }
 
     case 0xD:
     {
-        std::cout << op << "\n";
+        sprite sprite { op.x(), op.y(), {} };
+
+        for (
+            std::size_t readaddr = address, endaddr = address + op.nibble();
+            readaddr < endaddr;
+            ++readaddr
+        ) {
+            sprite.bytes.push_back(memory[readaddr]);
+        }
+
+        display.frame.xoreq(sprite);
         break;
     }
 
     case 0xE:
     {
-        std::cout << op << "\n";
         break;
     }
 
     case 0xF:
     {
-        std::cout << op << "\n";
         break;
     }
     }
