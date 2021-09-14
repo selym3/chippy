@@ -53,7 +53,7 @@ struct opcode
      ****************/
 
     // highest 4 bits
-    constexpr inline std::uint8_t id() const
+    constexpr inline std::uint16_t id() const
     { return extract(3); }
 
     // nnn
@@ -61,19 +61,19 @@ struct opcode
     { return extract(0, 2); }
 
     // kk 
-    constexpr inline std::uint8_t byte() const
+    constexpr inline std::uint16_t byte() const
     { return extract(0, 1); }
 
     // n
-    constexpr inline std::uint8_t nibble() const
+    constexpr inline std::uint16_t nibble() const
     { return extract(0); }
 
     // x
-    constexpr inline std::uint8_t x() const
+    constexpr inline std::uint16_t x() const
     { return extract(2); }
 
     // y 
-    constexpr inline std::uint8_t y() const
+    constexpr inline std::uint16_t y() const
     { return extract(1); }
 
     /******************* 
