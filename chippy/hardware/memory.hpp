@@ -107,7 +107,7 @@ struct memory
         return true;
     }
 
-    bool load_rom(const std::vector<std::uint16_t>& romcodes)
+    bool load_rom(const std::vector<std::uint16_t>& romcodes, bool bigendian=true)
     {
         auto rombytes = romcodes.size() * 2;
         if (rombytes > kFreeSize) 
@@ -120,8 +120,9 @@ struct memory
         {
             auto opcode = romcodes[i];
 
-            buffer[(i * 2) + 0x200] = (opcode & 0x00FF) >> 0;
-            buffer[(i * 2) + 0x201] = (opcode & 0xFF00) >> 8;
+            // are the opcodes being passed in in bigendian 
+            buffer[(i * 2) + 0x200 + bigendian] = (opcode & 0x00FF) >> 0;
+            buffer[(i * 2) + 0x201 - bigendian] = (opcode & 0xFF00) >> 8;
         }
 
         return true;
