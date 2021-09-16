@@ -30,9 +30,9 @@ namespace chippy
         memory_t memory;
 
         // REGISTERS
-        registers_t v;         // variables (0x0-0xF)
-        std::uint16_t address; // address
-        std::uint8_t pc;       // program counter
+        registers_t v;                 // variables (0x0-0xF)
+        std::uint16_t address;         // address
+        std::uint16_t pc = kFreeStart; // program counter
 
         // STACK
         stack_t stack; // stack

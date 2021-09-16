@@ -5,8 +5,10 @@ using namespace chippy;
 
 opcode cpu::get_opcode() const
 {
-    char upper = memory[kFreeStart + (pc + 0)];
-    char lower = memory[kFreeStart + (pc + 1)];
+    // the order of upper and lower bits is big-endian,
+    // as specified by the chip-8 language 
+    char upper = memory[pc + 0];
+    char lower = memory[pc + 1];
 
     std::uint16_t data =
         (static_cast<unsigned char>(upper) << 8) +
@@ -37,14 +39,17 @@ void cpu::handle(opcode op)
         {
         case 0x00E0:
         {
-            std::cout << "screen clearn\n";
+            display.clear();
             pc += 2;
             break;
         }
 
         case 0x00EE:
         {
+            std::cout << "popping from stack\n";
+            std::cout << "updating pc from " << pc;
             pc = stack.pop();
+            std::cout << " to " << pc << "\n";
             break;
         }
 
@@ -66,8 +71,11 @@ void cpu::handle(opcode op)
 
     case 0x2:
     {
+        std::cout << "pushing to stack\n";
         stack.push(pc);
+
         pc = op.addr();
+        std::cout << "updating program counter (" << (stack.top) << ")" << " to " << pc << "\n";
         break;
     }
 
@@ -115,8 +123,8 @@ void cpu::handle(opcode op)
     case 0x8:
     {
         // for conveience
-        std::uint8_t x = op.x();
-        std::uint8_t y = op.y();
+        std::uint16_t x = op.x();
+        std::uint16_t y = op.y();
 
         // lowest nibble is type of register operation
         auto type = op.extract(0);
@@ -150,6 +158,8 @@ void cpu::handle(opcode op)
         {
             std::uint16_t add = v[x] + v[y];
             v[0xF] = add > 255;
+
+            // NOTE: this might not work
             v[x] = static_cast<std::uint8_t>(add & 0x00FF);
             break;
         }
@@ -228,6 +238,8 @@ void cpu::handle(opcode op)
     {
         sprite sprite { op.x(), op.y(), {} };
 
+        // std::cout << op.x() << ", " << op.y() << " \n";
+        std::cout << address << " to " << (address + op.nibble()) << " | size (" << op.nibble() << ")\n";
         for (
             std::size_t readaddr = address, endaddr = address + op.nibble();
             readaddr < endaddr;
@@ -236,7 +248,9 @@ void cpu::handle(opcode op)
             sprite.bytes.push_back(memory[readaddr]);
         }
 
-        display.frame.xoreq(sprite);
+        v[0xF] = display.frame.xoreq(sprite);
+        std::cout << display.frame << "\n";
+        pc+=2;
         break;
     }
 
