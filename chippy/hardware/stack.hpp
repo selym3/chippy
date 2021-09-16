@@ -13,7 +13,6 @@ struct stack
     std::array<std::uint16_t, Size> buffer;
     std::uint16_t top = 0;
 
-
     void push(std::uint16_t value) 
     {
         buffer[top++] = value;
@@ -21,10 +20,8 @@ struct stack
 
     std::uint16_t pop() 
     {
-        --top;
-        return buffer.back(); 
+        return buffer[--top]; 
     }
-
 };
 
 }
