@@ -4,12 +4,14 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
+#include <ostream>
+
 namespace chippy
 {
 
 struct sprite
 {
-    std::uint8_t x, y;
+    std::uint16_t x, y;
     std::vector<char> bytes;
 };
 
@@ -61,18 +63,33 @@ struct frame : sf::Drawable
     int xoreq(const sprite& sprite) 
     {
         int collision = 0;
-        for (std::size_t row = sprite.y; row < sprite.bytes.size(); ++row)
+        for (std::size_t row = 0; row < sprite.bytes.size(); ++row)
         {
             // to avoid this loop, i can change the vector bits to be 
             // a vecotr char, but then reading and creating the loop is annoying
-            for (std::size_t col = sprite.x; col < 8; ++col)
-            {
-                auto index = row * cols + col;
+            for (std::size_t col = 0; col < 8; ++col)
+            {   
+                // looped row & col
+                auto rl = (row+sprite.y)%rows,
+                     cl = (col+sprite.x)%cols;
+
+                auto index = rl * cols + cl;
                 auto value = bits[index];
                 bits[index] = value ^ (sprite.bytes[row]&col);
             }
         }
         return collision;
+    }
+
+    friend std::ostream& operator<<(std::ostream& os, const frame& fr)
+    {
+        for (int row = 0; row < fr.rows; ++row)
+        {
+            for (int col = 0; col < fr.cols; ++col)
+                std::cout << fr.bits[row * fr.cols + col];
+            std::cout << "\n";
+        }
+        return os;
     }
 };
 
@@ -93,8 +110,13 @@ struct gpu
         },
         frame { kPixelCols, kPixelRows, kPixelWidth, kPixelHeight }
     {
-        for (int i = 0; i < kPixelCols; ++i)
-            frame.bits[i] = true;
+    }
+
+    void clear() 
+    {
+        window.clear(sf::Color::Black);
+        for (int i = 0; i < frame.bits.size(); ++i)
+            frame.bits[i] = false;
     }
 
     void draw()
