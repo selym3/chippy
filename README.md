@@ -4,8 +4,7 @@ chip 8 emulator
 ## todo
 
 * finish implementing opcodes
-* fix issues with opcodes + casting from uint8 to uint16
-* draw function plotting correctly 
+* draw function xor'ing correctly after consecutive draws?
 * timers
 * fix issues with segfaults with roms/tetris
 
