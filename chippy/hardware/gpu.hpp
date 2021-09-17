@@ -78,8 +78,6 @@ struct frame : sf::Drawable
         int collision = 0;
         for (std::size_t row = 0; row < sprite.bytes.size(); ++row)
         {
-            // to avoid this loop, i can change the vector bits to be 
-            // a vecotr char, but then reading and creating the loop is annoying
             for (std::size_t col = 0; col < 8; ++col)
             {   
                 // looped row & col
@@ -87,7 +85,12 @@ struct frame : sf::Drawable
                      cl = (col+sprite.x)%cols;
 
                 auto index = rl * cols + cl;
-                bits[index] = bits[index] ^ (sprite.bytes[row]&(1<<col));
+                
+                auto value = bits[index];
+                auto xorvalue = value ^ (sprite.bytes[row]&(1<<col));
+                collision |= value && !xorvalue;
+
+                bits[index] = xorvalue;
             }
         }
         return collision;

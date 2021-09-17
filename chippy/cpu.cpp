@@ -236,8 +236,10 @@ void cpu::handle(opcode op)
 
     case 0xD:
     {
+        // prepare sprite to draw
         sprite sprite { op.x(), op.y(), {} };
 
+        // read from the address register to rows of sprite
         // std::cout << op.x() << ", " << op.y() << " \n";
         std::cout << address << " to " << (address + op.nibble()) << " | size (" << op.nibble() << ")\n";
         for (
@@ -248,7 +250,12 @@ void cpu::handle(opcode op)
             sprite.bytes.push_back(memory[readaddr]);
         }
 
-        v[0xF] = display.frame.xoreq(sprite);
+        // xor and collision
+        auto collision = display.frame.xoreq(sprite);
+        v[0xF] = collision;
+
+        std::cout << "Collision status: " << collision << "\n";
+
         pc+=2;
         break;
     }
