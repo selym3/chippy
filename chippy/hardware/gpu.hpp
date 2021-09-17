@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 
+#include <bitset>
 #include <ostream>
 
 namespace chippy
@@ -13,6 +14,17 @@ struct sprite
 {
     std::uint16_t x, y;
     std::vector<char> bytes;
+
+    friend std::ostream& operator<<(std::ostream&os, const sprite& s)
+    {
+        std::cout << "Sprite (\n\tx: " << s.x << ", y: " << s.y;
+        std::cout << "\n\tbytes:\n";
+        for (auto byte : s.bytes)
+            std::cout << "\t\t" << std::bitset<8>(byte) << "\n";
+        std::cout << ")";
+
+        return os;
+    }
 };
 
 // construct simple frame buffer
@@ -62,6 +74,7 @@ struct frame : sf::Drawable
     // mutates the frame and returns if there was a collision
     int xoreq(const sprite& sprite) 
     {
+        // TODO: implement collision
         int collision = 0;
         for (std::size_t row = 0; row < sprite.bytes.size(); ++row)
         {
@@ -74,8 +87,7 @@ struct frame : sf::Drawable
                      cl = (col+sprite.x)%cols;
 
                 auto index = rl * cols + cl;
-                auto value = bits[index];
-                bits[index] = value ^ (sprite.bytes[row]&col);
+                bits[index] = bits[index] ^ (sprite.bytes[row]&(1<<col));
             }
         }
         return collision;

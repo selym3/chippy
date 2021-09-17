@@ -241,7 +241,7 @@ void cpu::handle(opcode op)
         // std::cout << op.x() << ", " << op.y() << " \n";
         std::cout << address << " to " << (address + op.nibble()) << " | size (" << op.nibble() << ")\n";
         for (
-            std::size_t readaddr = address, endaddr = address + op.nibble();
+            std::uint16_t readaddr = address, endaddr = address + op.nibble();
             readaddr < endaddr;
             ++readaddr
         ) {
@@ -249,7 +249,6 @@ void cpu::handle(opcode op)
         }
 
         v[0xF] = display.frame.xoreq(sprite);
-        std::cout << display.frame << "\n";
         pc+=2;
         break;
     }
