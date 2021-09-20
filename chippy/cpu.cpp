@@ -19,12 +19,17 @@ opcode cpu::get_opcode() const
 
 void cpu::cycle()
 {
+
+    // read & increment
     opcode opcode = get_opcode();
-    auto id = opcode.id();
+    pc+=2;
 
-    std::cout << opcode << " (" << id << ") \n";
+    std::cout << opcode << "\n";
 
+    // execute opcode
     handle(opcode);
+
+    // TODO: handle timers, etc.
     display.draw();
 }
 
@@ -40,7 +45,6 @@ void cpu::handle(opcode op)
         case 0x00E0:
         {
             display.clear();
-            pc += 2;
             break;
         }
 
@@ -84,7 +88,6 @@ void cpu::handle(opcode op)
         if (v[op.x()] == op.byte())
             pc += 2;
 
-        pc += 2;
         break;
     }
 
@@ -93,7 +96,6 @@ void cpu::handle(opcode op)
         if (v[op.x()] != op.byte())
             pc += 2;
 
-        pc += 2;
         break;
     }
 
@@ -102,21 +104,18 @@ void cpu::handle(opcode op)
         if (v[op.x()] == v[op.y()])
             pc += 2;
 
-        pc += 2;
         break;
     }
 
     case 0x6:
     {
         v[op.x()] = op.byte();
-        pc += 2;
         break;
     }
 
     case 0x7:
     {
         v[op.x()] += op.byte();
-        pc += 2;
         break;
     }
 
@@ -200,7 +199,6 @@ void cpu::handle(opcode op)
         }
         }
 
-        pc += 2;
         break;
     }
 
@@ -209,14 +207,12 @@ void cpu::handle(opcode op)
         if (v[op.x()] != v[op.y()])
             pc += 2;
 
-        pc += 2;
         break;
     }
 
     case 0xA:
     {
         address = op.addr();
-        pc += 2;
         break;
     }
 
@@ -230,7 +226,6 @@ void cpu::handle(opcode op)
     {
         auto random = std::rand() % 256;
         v[op.x()] = random & op.byte();
-        pc += 2;
         break;
     }
 
@@ -256,7 +251,6 @@ void cpu::handle(opcode op)
 
         std::cout << "Collision status: " << collision << "\n";
 
-        pc+=2;
         break;
     }
 
@@ -271,7 +265,6 @@ void cpu::handle(opcode op)
         {
             if (keys.pressed(key))
                 pc+=2;
-            pc+=2;
             break;
         }
 
@@ -279,7 +272,6 @@ void cpu::handle(opcode op)
         {
             if (!keys.pressed(key))
                 pc+=2;
-            pc+=2;
             break;
         }
         }
@@ -337,9 +329,9 @@ void cpu::handle(opcode op)
             }
             case 0x33:
             {
-                memory[address + 0] = (v[x]/100);
-                memory[address + 1] = (v[x]/10)%10;
-                memory[address + 2] = (v[x])%10;
+                memory[address + 0] = (v[x]/100);   // hundreds digit
+                memory[address + 1] = (v[x]/10)%10; // tens digit
+                memory[address + 2] = (v[x])%10;    // ones digit
 
                 break;
             }
@@ -365,7 +357,6 @@ void cpu::handle(opcode op)
             }
         }
 
-        pc += 2;
         break;
     }
     }
