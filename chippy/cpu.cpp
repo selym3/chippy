@@ -335,9 +335,32 @@ void cpu::handle(opcode op)
 
                 break;
             }
+            case 0x33:
+            {
+                memory[address + 0] = (v[x]/100);
+                memory[address + 1] = (v[x]/10)%10;
+                memory[address + 2] = (v[x])%10;
+
+                break;
+            }
+            case 0x55:
+            {
+                std::uint16_t regaddr = address;
+                for (std::uint16_t i = 0; i < x; ++i)
+                    memory[regaddr++] = v[i];
+                
+                break;
+            }
+            case 0x65:
+            {
+                for (std::uint16_t i = 0; i < x; ++i) 
+                    v[i] = memory[address + i];
+                
+                break;
+            }
             default: 
             {
-                std::cout << "ignored\n";
+                std::cout << "Ignored\n";
                 break;
             }
         }
