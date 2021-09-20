@@ -9,13 +9,14 @@ int main()
 {
     chippy::cpu cpu;
     
-    if (!use_counter(cpu.memory)) 
+    // if (!use_counter(cpu.memory))
+    if (!use_program(cpu.memory, "roms/lunar-lander.ch8")) 
         std::cerr << "failed to load program\n";
 
     for (;;)
     {
-        std::cin.get();
         cpu.cycle();
+        std::cin.get();
     }
 
     return 0;
