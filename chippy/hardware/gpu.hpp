@@ -76,7 +76,6 @@ struct frame : sf::Drawable
     // mutates the frame and returns if there was a collision
     int xoreq(const sprite& sprite) 
     {
-        // TODO: implement collision
         int collision = 0;
         for (std::size_t row = 0; row < sprite.bytes.size(); ++row)
         {
@@ -86,13 +85,20 @@ struct frame : sf::Drawable
                 auto rl = (row+sprite.y)%rows,
                      cl = (col+sprite.x)%cols;
 
+                // read from frame
                 auto index = rl * cols + cl;
-                
-                auto value = bits[index];
-                auto xorvalue = value ^ (sprite.bytes[row]&(1<<col));
-                collision |= value && !xorvalue;
+                bool bit = bits[index];
 
-                bits[index] = xorvalue;
+                // read from sprite
+                auto bitmask = 1<<(7-col);
+                bool newbit = (sprite.bytes[row]&bitmask) > 0;
+
+                // update frame
+                bool xorbit = bit^newbit;
+                bits[index] = xorbit;
+
+                // update collision
+                collision |= (bit&&!xorbit);
             }
         }
         return collision;
