@@ -8,18 +8,12 @@
 #include <fstream>
 #include <iostream>
 
+#include <bitset>
+
+#include "./font.hpp"
+
 namespace chippy
 {
-
-// struct memrange
-// {
-//     const std::size_t start, end;
-//     const std::size_t size;
-//     constexpr memrange(std::size_t s, std::size_t e) :
-//         start{s}, end{e}, size{e-s+1}
-//     {
-//     }
-// };
 
 constexpr std::size_t kFontStart = 0x000;
 constexpr std::size_t kFontEnd = 0x1FF;
@@ -35,22 +29,42 @@ constexpr std::size_t kDisplayEnd = 0xFFF;
 template <std::size_t Bytes>
 struct memory
 {
-    using buffer_t = std::array<char, Bytes>;
+    using buffer_t = std::array<std::uint8_t, Bytes>;
     buffer_t buffer;
-    memory() {}
+    memory() 
+    {
+        load_font();
+    }
 
     /***********************
      * READ & WRITE MEMORY *
      ***********************/
 
-    const char& operator[](std::size_t index) const
+    const std::uint8_t& operator[](std::size_t index) const
     {
         return buffer[index];
     }
     
-    char& operator[](std::size_t index)
+    std::uint8_t& operator[](std::size_t index)
     {
         return buffer[index];
+    }
+
+    /***************
+     * WRITE FONTS *
+     ***************/
+
+    void load_font()
+    {
+        std::size_t addr = kFontStart;
+        for (const auto& digit : kFont)
+        {
+            for (const auto& encoding : digit) {
+                // std::cout << std::bitset<8>(encoding) << "\n";
+                buffer[addr++] = encoding;
+            }
+            // std::cout << "\n";
+        }
     }
 
     /*************
@@ -93,7 +107,7 @@ struct memory
         return true;
     }
 
-    bool load_rom(const std::vector<char>& rombytes)
+    bool load_rom(const std::vector<std::uint8_t>& rombytes)
     {
         if (rombytes.size() > kFreeSize) 
         {

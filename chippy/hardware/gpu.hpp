@@ -1,6 +1,8 @@
 #ifndef __GPU_HPP__
 #define __GPU_HPP__
 
+#include <cstdint>
+
 #include <SFML/Graphics.hpp>
 #include <vector>
 
@@ -13,7 +15,7 @@ namespace chippy
 struct sprite
 {
     std::uint16_t x, y;
-    std::vector<char> bytes;
+    std::vector<std::uint8_t> bytes;
 
     friend std::ostream& operator<<(std::ostream&os, const sprite& s)
     {

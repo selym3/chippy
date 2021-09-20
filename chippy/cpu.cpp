@@ -7,8 +7,8 @@ opcode cpu::get_opcode() const
 {
     // the order of upper and lower bits is big-endian,
     // as specified by the chip-8 language 
-    char upper = memory[pc + 0];
-    char lower = memory[pc + 1];
+    std::uint8_t upper = memory[pc + 0];
+    std::uint8_t lower = memory[pc + 1];
 
     std::uint16_t data =
         (static_cast<std::uint16_t>(upper) << 8) +
@@ -293,6 +293,11 @@ void cpu::handle(opcode op)
 
         switch (type)
         {
+            case 0x07:
+            {
+                v[x] = delay;
+                break;
+            }
             case 0x0A:
             {
                 for (;;) 
@@ -307,9 +312,27 @@ void cpu::handle(opcode op)
                 }
                 break;
             }
+            case 0x15:
+            {
+                delay = v[x];
+                break;
+            }
+            case 0x18:
+            {
+                sound = v[x];
+                break;
+            }
             case 0x1E:
             {
                 address += v[x];
+                break;
+            }
+            case 0x29:
+            {
+                address = kFontStart +  // where the font data starts
+                    5 *                 // bytes per digit
+                    v[x];               // which digit to draw
+
                 break;
             }
             default: 
@@ -319,7 +342,7 @@ void cpu::handle(opcode op)
             }
         }
 
-
+        pc += 2;
         break;
     }
     }
