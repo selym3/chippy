@@ -9,6 +9,7 @@
 #include "./hardware/memory.hpp"
 #include "./hardware/stack.hpp"
 #include "./hardware/gpu.hpp"
+#include "./hardware/keyboard.hpp"
 
 namespace chippy
 {
@@ -39,6 +40,9 @@ namespace chippy
 
         // DISPLAY
         gpu display;
+
+        // KEYBOARD
+        keyboard keys;
 
         // TIMERS
         std::uint8_t delay; // delay timer (60 hz)

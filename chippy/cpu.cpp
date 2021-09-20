@@ -11,8 +11,8 @@ opcode cpu::get_opcode() const
     char lower = memory[pc + 1];
 
     std::uint16_t data =
-        (static_cast<unsigned char>(upper) << 8) +
-        (static_cast<unsigned char>(lower) << 0);
+        (static_cast<std::uint16_t>(upper) << 8) +
+        (static_cast<std::uint16_t>(lower) << 0);
 
     return opcode{data};
 }
@@ -127,7 +127,7 @@ void cpu::handle(opcode op)
         std::uint16_t y = op.y();
 
         // lowest nibble is type of register operation
-        auto type = op.extract(0);
+        auto type = op.nibble();
         switch (type)
         {
         case 0x0:
@@ -237,7 +237,7 @@ void cpu::handle(opcode op)
     case 0xD:
     {
         // prepare sprite to draw
-        sprite sprite { op.x(), op.y(), {} };
+        sprite sprite { v[op.x()], v[op.y()], {} };
 
         // read from the address register to rows of sprite
         // std::cout << op.x() << ", " << op.y() << " \n";
@@ -262,11 +262,64 @@ void cpu::handle(opcode op)
 
     case 0xE:
     {
-        break;
+        const auto which = op.byte();
+        const auto key = v[op.x()];
+
+        switch (which)
+        {
+        case 0x9E:
+        {
+            if (keys.pressed(key))
+                pc+=2;
+            pc+=2;
+            break;
+        }
+
+        case 0xA1:
+        {
+            if (!keys.pressed(key))
+                pc+=2;
+            pc+=2;
+            break;
+        }
+        }
     }
 
     case 0xF:
     {
+        // lowest 2 bits are type of operation
+        const auto type = op.byte();
+        const auto x = op.x();
+
+        switch (type)
+        {
+            case 0x0A:
+            {
+                for (;;) 
+                {
+                    // optional uint8_t
+                    auto keyPressed = keys.any();
+
+                    if (keyPressed.has_value()) {
+                        v[x] = keyPressed.value();
+                        break; 
+                    }
+                }
+                break;
+            }
+            case 0x1E:
+            {
+                address += v[x];
+                break;
+            }
+            default: 
+            {
+                std::cout << "ignored\n";
+                break;
+            }
+        }
+
+
         break;
     }
     }

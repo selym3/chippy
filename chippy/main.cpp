@@ -30,7 +30,7 @@ int main()
     cpu.memory.load_rom(
         std::vector<std::uint16_t>({
             0xA000 + 0x0200 + 0x0006,
-            0xD634,
+            0xD004,
             0x1000 + 0x0200 + 0x0002,
             0b0000000100000010,
             0b0000001100000100,
