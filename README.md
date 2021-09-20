@@ -3,10 +3,11 @@ chip 8 emulator
 
 ## todo
 
-* finish implementing opcodes
-* draw function xor'ing correctly after consecutive draws?
-* timers
-* fix issues with segfaults with roms/tetris
+* opcodes may need fixing
+* sound and delay timers
+* change sprite to not require copy MAYBE
+* find issue that causes loop in roms/lunar-lander.ch8
+* return string in handle(opcode) for better debug
 
 ## resources
 
