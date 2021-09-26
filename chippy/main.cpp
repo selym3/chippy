@@ -27,7 +27,6 @@ bool use_counter(chippy::memory_t& memory)
     return memory.load_rom(
         std::vector<std::uint16_t>({
             0x6000, // V0 - which digit
-            0x6301, // V3 - increment for digit (1)
             0x6100, // V1 - x-cor of sprite
             0x6200, // V2 - y-cor of sprite
             
@@ -35,10 +34,10 @@ bool use_counter(chippy::memory_t& memory)
             0x00e0, // clear screen
             0xD125, // draw digit at x, y cors
 
-            0x8034, // V0 += V3 (digit += 1)
+            0x7001, // V0 += 1 (digit += 1)
             0x4010, // if V0 != 16
             0x6000, // set V0 to 0
-            0x1200 + 4*2, // jump 4 instructions from start
+            0x1200 + 3*2, // jump 3 instructions from start
         }),
         true
     );
