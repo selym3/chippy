@@ -10,6 +10,7 @@
 #include "./hardware/stack.hpp"
 #include "./hardware/gpu.hpp"
 #include "./hardware/keyboard.hpp"
+#include "./hardware/timer.hpp"
 
 namespace chippy
 {
@@ -45,8 +46,10 @@ namespace chippy
         keyboard keys;
 
         // TIMERS
-        std::uint8_t delay; // delay timer (60 hz)
-        std::uint8_t sound; // sound timer (60 hz)
+        timer time; // track 60Hz
+
+        std::uint8_t delay; // delay timer (60 Hz)
+        std::uint8_t sound; // sound timer (60 Hz)
 
         // read and execute a single opcode
         void cycle();
@@ -54,7 +57,7 @@ namespace chippy
         void handle(opcode op);
 
         // perform cycles and timer updates
-        void run();
+        bool run();
     };
 }
 

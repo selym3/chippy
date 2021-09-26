@@ -4,10 +4,29 @@
 
 using namespace chippy;
 
-void cpu::run()
+bool cpu::run()
 {
-    
+    static std::uint8_t PERIOD = 17; // 17 ms
+    static std::uint8_t MAX_OPCODES = 60; // in one period
 
+    // run certain # of opcodes in a period
+    time.reset();
+    while (time.elapsed() < PERIOD)
+    {
+        std::uint8_t executed = 0;
+        if (executed < MAX_OPCODES) 
+        { 
+            cycle();
+            ++executed;
+        }
+    }
+
+    // update timers
+    if (delay) --delay;
+    if (sound) --sound;
+
+    // exit running if special exit key
+    return keys.exit();
 }
 
 opcode cpu::get_opcode() const

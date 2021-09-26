@@ -54,7 +54,12 @@ struct keyboard
         return std::nullopt;
     }
 
-private:
+    // special exit key (not part of emulator)
+    bool exit() const
+    {
+        return sf::Keyboard::isKeyPressed(key::Escape);
+    }
+
 };
 
 }

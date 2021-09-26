@@ -13,10 +13,10 @@ int main()
     if (!use_program(cpu.memory, "roms/lunar-lander.ch8")) 
         std::cerr << "failed to load program\n";
 
-    for (;;)
+    for (;;) 
     {
-        cpu.cycle();
-        std::cin.get();
+        if (cpu.run())
+            break;
     }
 
     return 0;
