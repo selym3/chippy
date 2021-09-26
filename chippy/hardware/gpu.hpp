@@ -133,16 +133,17 @@ struct gpu
         },
         frame { kPixelCols, kPixelRows, kPixelWidth, kPixelHeight }
     {
+        clear();
     }
 
     void clear() 
     {
         window.clear(sf::Color::Black);
-        for (int i = 0; i < frame.bits.size(); ++i)
-            frame.bits[i] = false;
+        window.display();
     }
 
     void draw()
+    // void draw(const frame&)
     {
         window.clear(sf::Color::Black);
         window.draw(frame);

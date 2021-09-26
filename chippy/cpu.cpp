@@ -1,7 +1,14 @@
 #include "./cpu.hpp"
 #include <cstdlib> // random
+#include <chrono>
 
 using namespace chippy;
+
+void cpu::run()
+{
+    
+
+}
 
 opcode cpu::get_opcode() const
 {
@@ -19,7 +26,6 @@ opcode cpu::get_opcode() const
 
 void cpu::cycle()
 {
-
     // read & increment
     opcode opcode = get_opcode();
     pc+=2;
@@ -28,9 +34,6 @@ void cpu::cycle()
 
     // execute opcode
     handle(opcode);
-
-    // TODO: handle timers, etc.
-    display.draw();
 }
 
 void cpu::handle(opcode op)
@@ -248,6 +251,8 @@ void cpu::handle(opcode op)
         // xor and collision
         auto collision = display.frame.xoreq(sprite);
         v[0xF] = collision;
+
+        display.draw();
 
         std::cout << "Collision status: " << collision << "\n";
 

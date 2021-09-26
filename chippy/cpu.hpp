@@ -48,9 +48,13 @@ namespace chippy
         std::uint8_t delay; // delay timer (60 hz)
         std::uint8_t sound; // sound timer (60 hz)
 
-        opcode get_opcode() const;
+        // read and execute a single opcode
         void cycle();
+        opcode get_opcode() const;
         void handle(opcode op);
+
+        // perform cycles and timer updates
+        void run();
     };
 }
 
