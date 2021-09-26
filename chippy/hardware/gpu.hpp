@@ -9,13 +9,15 @@
 #include <bitset>
 #include <ostream>
 
+#include <span>
+
 namespace chippy
 {
 
 struct sprite
 {
     std::uint16_t x, y;
-    std::vector<std::uint8_t> bytes;
+    std::span<std::uint8_t> bytes;
 
     friend std::ostream& operator<<(std::ostream&os, const sprite& s)
     {
@@ -139,6 +141,8 @@ struct gpu
     void clear() 
     {
         window.clear(sf::Color::Black);
+        for (int i = 0; i < frame.bits.size(); ++i)
+            frame.bits[i] = false;
         window.display();
     }
 

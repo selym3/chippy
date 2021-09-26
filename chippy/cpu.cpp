@@ -254,18 +254,13 @@ void cpu::handle(opcode op)
     case 0xD:
     {
         // prepare sprite to draw
-        sprite sprite { v[op.x()], v[op.y()], {} };
-
-        // read from the address register to rows of sprite
-        // std::cout << op.x() << ", " << op.y() << " \n";
-        std::cout << address << " to " << (address + op.nibble()) << " | size (" << op.nibble() << ")\n";
-        for (
-            std::uint16_t readaddr = address, endaddr = address + op.nibble();
-            readaddr < endaddr;
-            ++readaddr
-        ) {
-            sprite.bytes.push_back(memory[readaddr]);
-        }
+        sprite sprite { 
+            // coordinates
+            v[op.x()], v[op.y()], 
+            
+            // non-owning date reference
+            {memory.buffer.data() + address, op.nibble()} 
+        };
 
         // xor and collision
         auto collision = display.frame.xoreq(sprite);

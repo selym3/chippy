@@ -5,7 +5,6 @@ chip 8 emulator
 
 * opcodes may need fixing
 * sound and delay timers
-* change sprite to not require copy MAYBE
 * find issue that causes loop in roms/lunar-lander.ch8
 * return string in handle(opcode) for better debug
 
