@@ -4,9 +4,10 @@ chip 8 emulator
 ## todo
 
 * opcodes may need fixing
-* sound and delay timers
-* find issue that causes loop in roms/lunar-lander.ch8
 * return string in handle(opcode) for better debug
+* implement sound for sound 
+* add more rendering windows (e.g. display opcodes)
+* implement changes here <https://www.youtube.com/watch?v=rpLoS7B6T94&ab_channel=Bisqwit>
 
 ## resources
 
